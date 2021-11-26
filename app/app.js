@@ -31,5 +31,7 @@ app.set("views", "./src/views"); //views를 관리할 폴더를 지정.
 app.set("view engine", "ejs"); // html을 어떤 엔진으로 해석할 것인지 지정.
 app.use("/", home); // use : 미들웨어를 등록해주는 메서드.
 // /으로 오면 home으로 이동해서 index.js를 읽어 라우팅된다.
+app.use(express.static(`${__dirname}/src/public`)); // 미들웨어 등록
+// 정적경로를 생성하는 메서드 'app/src/public을 정적경로로 추가함.
 
 module.exports = app; // 서버 기동 모듈화를 위한 내보내기
