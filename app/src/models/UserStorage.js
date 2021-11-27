@@ -20,6 +20,19 @@ class UserStorage {
         return newUsers;
     } // static 변수를 return 하므로 static으로 만든다.
       // static으로 선언했으므로 클래스를 인스턴스화 하지 않아도 쓸 수 있다.
+    static getUserInfo(id) {
+        const users = this.#users;
+        const idx = users.id.indexOf(id);
+        const userKeys = Object.keys(users); // => {id, psword, name}
+        // users의 key값을 list로 만든다.
+        const userInfo = userKeys.reduce((newUser, info) => {
+            newUser[info] = users[info][idx];
+            // newUser에 key(info)에 따른 값이 순차적으로 들어간다.
+            return newUser;
+        }, {});
+
+        return userInfo;
+    }
 }
 
 module.exports = UserStorage;
