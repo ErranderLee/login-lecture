@@ -12,26 +12,6 @@ class UserStorage {
     // }; // 클래스 내에 변수 선언할 때 const 필요없음.
     //    // static : class를 인스턴스화 시키지 않고 변수를 불러올 수 있음.
     //    // # : public 변수를 private으로 바꾼다 -> 은닉화
-    
-    static getUsers(...fields) {
-        // const users = this.#users;
-        const newUsers = fields.reduce((newUsers, field) => {
-            if (users.hasOwnProperty(field)) {
-                newUsers[field] = users[field];
-            }
-            return newUsers;
-        }, {});
-        return newUsers;
-    } // static 변수를 return 하므로 static으로 만든다.
-      // static으로 선언했으므로 클래스를 인스턴스화 하지 않아도 쓸 수 있다.
-    static getUserInfo(id) {
-        return fs.readFile("./src/databases/hoyonglee/users.json") // promise 객체를 반환
-            .then((data) => {
-                return this.#getUserInfo(data, id);
-            })
-            .catch((err) => console.log)
-    }
-
     static #getUserInfo(data, id) {
         const users = JSON.parse(data);
         const idx = users.id.indexOf(id);
@@ -46,13 +26,47 @@ class UserStorage {
         return userInfo;
     }
 
-    static save(userInfo) {
-        // const users = this.#users;
+    static #getUsers(data, isAll, fields) {
+        const users = JSON.parse(data); // 버퍼 데이터를 읽을 수 있는 데이터로 변환.
+        if (isAll) return users; // 모든 필드의 정보 return.
+        const newUsers = fields.reduce((newUsers, field) => {
+            if (users.hasOwnProperty(field)) {
+                newUsers[field] = users[field];
+            }
+            return newUsers;
+        }, {});
+        return newUsers;
+    }
+
+    static getUsers(isAll, ...fields) {
+        return fs.readFile("./src/databases/hoyonglee/users.json") // promise 객체를 반환
+            .then((data) => {
+                return this.#getUsers(data, isAll, fields);
+            })
+            .catch((err) => console.log)
+        
+    } // static 변수를 return 하므로 static으로 만든다.
+      // static으로 선언했으므로 클래스를 인스턴스화 하지 않아도 쓸 수 있다.
+    static getUserInfo(id) {
+        return fs.readFile("./src/databases/hoyonglee/users.json") // promise 객체를 반환
+            .then((data) => {
+                return this.#getUserInfo(data, id);
+            })
+            .catch((err) => console.log)
+    }
+
+    static async save(userInfo) {
+        // 모든 데이터를 불러와서 추가한 후 다시 저장.
+        const users = await this.getUsers(true);
+        
+        if (users.id.includes(userInfo.id)) {
+            throw "이미 존재하는 아이디입니다.";
+            // 문자열을 error로 throw 할 수 있음.
+        }
         users.id.push(userInfo.id);
         users.name.push(userInfo.name);
         users.psword.push(userInfo.psword);
-        console.log(users);
-        // console.log(this.#users);
+        fs.writeFile("./src/databases/hoyonglee/users.json", JSON.stringify(users));
         return { success: true };
     }
 }
