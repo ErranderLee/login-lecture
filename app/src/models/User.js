@@ -7,9 +7,14 @@ class User {
         this.body = body;
     }
 
-    login() {
-        const { id, psword } = UserStorage.getUserInfo(this.body.id);
-        
+    async login() {
+        // console.log(await UserStorage.getUserInfo(this.body.id));
+        // Promise { <pending> }으로 출력이 되는데 pending은 데이터를 다 읽지 못했다는 뜻.
+        // Promise가 비동기적으로 동작하기 때문에 데이터를 모두 읽기 전에 출력되서 undefined가 출력된다. 
+        // 따라서 기다리라는 것을 명시해야 하는데 그것이 await이다. Promise를 반환하는 것에만 적용할 수 있다.
+        // await는 async 함수 안에서만 쓸 수 있다.
+        const {id, psword} = await UserStorage.getUserInfo(this.body.id);
+        // 이 login 함수를 실행하는 것에도 async, await을 걸어줘야 한다.
         if (id) {
             if (id === this.body.id && psword === this.body.psword) {
                 return { success: true };
