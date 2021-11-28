@@ -10,3 +10,5 @@ const db = maria.createConnection({
 db.connect();
 
 module.exports = db;
+
+// DB 연결
