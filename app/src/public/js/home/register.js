@@ -13,11 +13,12 @@ registerBtn.addEventListener("click", register);
 // Click 이벤트 발생 시 콜백함수(register) 실행
 
 function register() {
+    if (!id.value) return alert("아이디를 입력해주세요.");
+    if (confirmPsword.value !== psword.value) return alert("비밀번호가 일치하지 않습니다.");
     const req = {
         id: id.value,
         name: name.value,
         psword: psword.value,
-        confirmPsword: confirmPsword.value,
     };
 
     console.log(req);
@@ -32,7 +33,7 @@ function register() {
         .then((res) => res.json())
         .then((res) => {
             if(res.success) {
-                location.href = "/";
+                location.href = "/login";
             } else {
                 alert(res.msg);
             }
